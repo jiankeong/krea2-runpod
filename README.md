@@ -1,4 +1,4 @@
-# Krea2 Turbo Edit v1.1 FP8 — RunPod Serverless v5
+# Krea2 Turbo Edit v1.1 FP8 — RunPod Serverless v5.1
 
 ## What changed from v4
 
@@ -21,3 +21,7 @@ RunPod Hub tests.
 
 The included `workflow_api.json` is the Krea2 workflow template. The Docker
 base remains the official `runpod/worker-comfyui:5.8.6-base`.
+
+## v5.1
+
+Removed the fixed `gpuTypeId` from `.runpod/tests.json` so RunPod Hub can allocate any available GPU compatible with the allowed CUDA versions. The smoke test still uses `USE_MOCK_PIPELINE=1` and does not load Krea2 weights.
