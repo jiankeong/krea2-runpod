@@ -1,0 +1,128 @@
+{
+  "input": {
+    "workflow": {
+      "1": {
+        "class_type": "LoadImage",
+        "inputs": {
+          "image": "input.png"
+        }
+      },
+      "4": {
+        "class_type": "VAELoader",
+        "inputs": {
+          "vae_name": "qwen_image_vae.safetensors"
+        }
+      },
+      "7": {
+        "class_type": "CLIPLoader",
+        "inputs": {
+          "clip_name": "qwen3vl_4b_fp8_scaled.safetensors",
+          "type": "krea2",
+          "device": "default"
+        }
+      },
+      "8": {
+        "class_type": "UNETLoader",
+        "inputs": {
+          "unet_name": "Krea2_turbo_uncensored_edit_v1.1-fp8_scaled.safetensors",
+          "weight_dtype": "default"
+        }
+      },
+      "10": {
+        "class_type": "CLIPTextEncode",
+        "inputs": {
+          "text": "low quality",
+          "clip": [
+            "7",
+            0
+          ]
+        }
+      },
+      "15": {
+        "class_type": "EmptyLatentImage",
+        "inputs": {
+          "width": 1024,
+          "height": 1024,
+          "batch_size": 1
+        }
+      },
+      "16": {
+        "class_type": "TextEncodeQwenImageEdit",
+        "inputs": {
+          "clip": [
+            "7",
+            0
+          ],
+          "prompt": "Edit this image. Keep the face consistent and preserve the original composition.",
+          "vae": [
+            "4",
+            0
+          ],
+          "image": [
+            "1",
+            0
+          ]
+        }
+      },
+      "3": {
+        "class_type": "KSamplerAdvanced",
+        "inputs": {
+          "model": [
+            "8",
+            0
+          ],
+          "add_noise": "enable",
+          "noise_seed": 123456789,
+          "steps": 8,
+          "cfg": 1.0,
+          "sampler_name": "euler",
+          "scheduler": "simple",
+          "positive": [
+            "16",
+            0
+          ],
+          "negative": [
+            "10",
+            0
+          ],
+          "latent_image": [
+            "15",
+            0
+          ],
+          "start_at_step": 0,
+          "end_at_step": 10000,
+          "return_with_leftover_noise": "disable"
+        }
+      },
+      "11": {
+        "class_type": "VAEDecode",
+        "inputs": {
+          "samples": [
+            "3",
+            0
+          ],
+          "vae": [
+            "4",
+            0
+          ]
+        }
+      },
+      "13": {
+        "class_type": "SaveImage",
+        "inputs": {
+          "filename_prefix": "krea2_edit",
+          "images": [
+            "11",
+            0
+          ]
+        }
+      }
+    },
+    "images": [
+      {
+        "name": "input.png",
+        "image": "PASTE_BASE64_IMAGE_HERE"
+      }
+    ]
+  }
+}

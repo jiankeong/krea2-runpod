@@ -1,0 +1,11 @@
+{
+  "tests": [
+    {
+      "name": "handler_validation",
+      "input": {
+        "workflow": {}
+      },
+      "timeout": 30000
+    }
+  ]
+}
