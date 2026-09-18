@@ -50,3 +50,27 @@ Allowed pools:
 `ADA_24,AMPERE_24,ADA_48_PRO,AMPERE_48,ADA_80_PRO,AMPERE_80`
 
 The working Hub smoke-test configuration in `.runpod/tests.json` is unchanged.
+
+
+## v5.5
+
+Production startup now bootstraps the Krea2 model files before starting the
+official worker-comfyui runtime.
+
+Startup behavior:
+
+- RunPod Hub smoke test (`USE_MOCK_PIPELINE=1`): skip downloads and immediately
+  start worker-comfyui so the 64x64 `EmptyImage -> SaveImage` test can run.
+- Production (`USE_MOCK_PIPELINE=0`, the default): verify/download model files
+  into the persistent Network Volume and then execute `/start.sh`.
+- Existing files larger than 1 MiB are reused, so subsequent cold starts do not
+  redownload the weights.
+
+Network Volume paths:
+
+- `/runpod-volume/models/unet/Krea2_turbo_uncensored_edit_v1.1-fp8_scaled.safetensors`
+- `/runpod-volume/models/clip/qwen3vl_4b_fp8_scaled.safetensors`
+- `/runpod-volume/models/vae/qwen_image_vae.safetensors`
+
+Attach a sufficiently large Network Volume to the production Endpoint and leave
+`USE_MOCK_PIPELINE` disabled there.

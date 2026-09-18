@@ -42,6 +42,12 @@
       "13.2",
       "13.3"
     ],
-    "gpuTypeId": "NVIDIA L4"
+    "gpuTypeId": "NVIDIA L4",
+    "env": [
+      {
+        "key": "USE_MOCK_PIPELINE",
+        "value": "1"
+      }
+    ]
   }
 }
