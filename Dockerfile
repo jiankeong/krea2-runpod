@@ -6,4 +6,4 @@ USER root
 # This custom node only performs a non-fatal background model bootstrap.
 COPY custom_nodes/krea2_bootstrap /comfyui/custom_nodes/krea2_bootstrap
 
-RUN echo "Krea2 v5.8 image built"
+RUN echo "Krea2 v5.8.1 image built"

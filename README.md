@@ -84,3 +84,9 @@ Production requires a Network Volume mounted at `/runpod-volume`.
 - Hugging Face cache is stored on `/runpod-volume/.hf-cache`, avoiding pressure on the 40 GB ephemeral container disk.
 - RunPod worker-comfyui intentionally exposes `/runpod-volume/models/unet` as ComfyUI `diffusion_models` and `/runpod-volume/models/clip` as `text_encoders`; those legacy directory names are therefore correct for this image.
 - Wait for `[Krea2 bootstrap] MODEL_DOWNLOAD_COMPLETE` before sending a real Krea2 workflow.
+
+## v5.8.1
+
+- Hub smoke-test isolation hardened: when `USE_MOCK_PIPELINE=1`, the custom node returns through the minimal path before importing `fcntl`, `huggingface_hub`, filesystem helpers, or starting any thread.
+- Production behavior keeps the v5.8 Network Volume lock and persistent Hugging Face cache.
+- `.runpod/tests.json` remains required and unchanged from the known-good v5.7 smoke workflow.
