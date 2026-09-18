@@ -25,3 +25,10 @@ base remains the official `runpod/worker-comfyui:5.8.6-base`.
 ## v5.1
 
 Removed the fixed `gpuTypeId` from `.runpod/tests.json` so RunPod Hub can allocate any available GPU compatible with the allowed CUDA versions. The smoke test still uses `USE_MOCK_PIPELINE=1` and does not load Krea2 weights.
+
+## v5.2
+
+Hub smoke-test scheduling update:
+- Explicit test GPU: `NVIDIA L4`
+- Expanded `allowedCudaVersions` from 12.4 through 13.3
+- `USE_MOCK_PIPELINE=1` remains enabled for Hub tests, so Krea2 weights are not loaded during the smoke test.
