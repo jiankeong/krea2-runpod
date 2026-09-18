@@ -32,3 +32,11 @@ Hub smoke-test scheduling update:
 - Explicit test GPU: `NVIDIA L4`
 - Expanded `allowedCudaVersions` from 12.4 through 13.3
 - `USE_MOCK_PIPELINE=1` remains enabled for Hub tests, so Krea2 weights are not loaded during the smoke test.
+
+## v5.3
+
+Hub smoke test now sends a real, model-free ComfyUI workflow:
+`EmptyImage (64x64) -> SaveImage`.
+
+This fixes `prompt_no_outputs` caused by the previous empty `{}` workflow.
+The Hub test does not load Krea2, Qwen3VL, or the VAE.
