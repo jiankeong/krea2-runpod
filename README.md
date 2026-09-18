@@ -68,7 +68,7 @@ bootstrap when ComfyUI loads custom nodes:
 Production requires a Network Volume mounted at `/runpod-volume`.
 
 
-## v5.7 crash fix
+## v5.8 crash fix
 
 - The bootstrap hook can no longer raise an exception that kills ComfyUI.
 - Missing `/runpod-volume` falls back to ephemeral `/comfyui/models`.
@@ -76,3 +76,11 @@ Production requires a Network Volume mounted at `/runpod-volume`.
   not blocked by Hugging Face downloads.
 - Look for `MODEL_DOWNLOAD_COMPLETE` before sending the first Krea2 workflow.
 - The official worker-comfyui ENTRYPOINT/CMD remains untouched.
+
+
+## v5.8 notes
+
+- Network Volume model downloads are serialized with a file lock, preventing multiple autoscaled workers from racing on the same files.
+- Hugging Face cache is stored on `/runpod-volume/.hf-cache`, avoiding pressure on the 40 GB ephemeral container disk.
+- RunPod worker-comfyui intentionally exposes `/runpod-volume/models/unet` as ComfyUI `diffusion_models` and `/runpod-volume/models/clip` as `text_encoders`; those legacy directory names are therefore correct for this image.
+- Wait for `[Krea2 bootstrap] MODEL_DOWNLOAD_COMPLETE` before sending a real Krea2 workflow.
