@@ -66,3 +66,13 @@ bootstrap when ComfyUI loads custom nodes:
 - Existing model files on the Network Volume are reused.
 
 Production requires a Network Volume mounted at `/runpod-volume`.
+
+
+## v5.7 crash fix
+
+- The bootstrap hook can no longer raise an exception that kills ComfyUI.
+- Missing `/runpod-volume` falls back to ephemeral `/comfyui/models`.
+- Large model downloads run in a background thread, so Serverless readiness is
+  not blocked by Hugging Face downloads.
+- Look for `MODEL_DOWNLOAD_COMPLETE` before sending the first Krea2 workflow.
+- The official worker-comfyui ENTRYPOINT/CMD remains untouched.
