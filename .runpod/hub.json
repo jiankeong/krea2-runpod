@@ -7,7 +7,7 @@
     "runsOn": "GPU",
     "containerDiskInGb": 40,
     "gpuCount": 1,
-    "gpuIds": "RTX 6000 Ada,RTX A6000,NVIDIA GeForce RTX 4090",
+    "gpuIds": "ADA_24,AMPERE_24,ADA_48_PRO,AMPERE_48,ADA_80_PRO,AMPERE_80",
     "allowedCudaVersions": [
       "12.4",
       "12.3",

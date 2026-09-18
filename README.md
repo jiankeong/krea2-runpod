@@ -40,3 +40,13 @@ Hub smoke test now sends a real, model-free ComfyUI workflow:
 
 This fixes `prompt_no_outputs` caused by the previous empty `{}` workflow.
 The Hub test does not load Krea2, Qwen3VL, or the VAE.
+
+## v5.4
+
+Fixed `.runpod/hub.json` `gpuIds` for Endpoint creation.
+RunPod expects GPU pool IDs rather than GPU display names.
+
+Allowed pools:
+`ADA_24,AMPERE_24,ADA_48_PRO,AMPERE_48,ADA_80_PRO,AMPERE_80`
+
+The working Hub smoke-test configuration in `.runpod/tests.json` is unchanged.
