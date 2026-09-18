@@ -3,24 +3,20 @@ import shutil
 from pathlib import Path
 from huggingface_hub import hf_hub_download
 
-VOL = Path("/runpod-volume")
-MODEL_ROOT = VOL / "models"
-DIFF = MODEL_ROOT / "diffusion_models"
-# worker-comfyui extra_model_paths.yaml maps `clip:` to models/clip/.
-# CLIPLoader discovers text encoders there as well.
-CLIP = MODEL_ROOT / "clip"
-VAE = MODEL_ROOT / "vae"
-
-for p in (DIFF, CLIP, VAE):
+ROOT = Path("/runpod-volume/models")
+# worker-comfyui maps /runpod-volume/models/unet as its diffusion model path.
+UNET = ROOT / "unet"
+CLIP = ROOT / "clip"
+VAE = ROOT / "vae"
+for p in (UNET, CLIP, VAE):
     p.mkdir(parents=True, exist_ok=True)
 
-token = os.getenv("HF_TOKEN") or None
-
+TOKEN = os.getenv("HF_TOKEN") or None
 MODELS = [
     (
         "ChrisColeTech/krea2-turbo-uncensored-v1.1-FP8",
         "split/diffusion_models/Krea2_turbo_uncensored_edit_v1.1-fp8_scaled.safetensors",
-        DIFF / "Krea2_turbo_uncensored_edit_v1.1-fp8_scaled.safetensors",
+        UNET / "Krea2_turbo_uncensored_edit_v1.1-fp8_scaled.safetensors",
     ),
     (
         "Comfy-Org/Krea-2",
@@ -36,18 +32,17 @@ MODELS = [
 
 def fetch(repo, filename, dest):
     if dest.exists() and dest.stat().st_size > 1024 * 1024:
-        print(f"[Krea2 bootstrap] Exists, skip: {dest}", flush=True)
+        print(f"[Krea2] exists: {dest}", flush=True)
         return
-    print(f"[Krea2 bootstrap] Downloading {repo}/{filename}", flush=True)
-    cached = hf_hub_download(repo_id=repo, filename=filename, token=token)
-    tmp = dest.with_suffix(dest.suffix + ".part")
+    print(f"[Krea2] downloading {repo}/{filename}", flush=True)
+    cached = hf_hub_download(repo_id=repo, filename=filename, token=TOKEN)
+    tmp = Path(str(dest) + ".part")
     if tmp.exists():
         tmp.unlink()
     shutil.copy2(cached, tmp)
     tmp.replace(dest)
-    print(f"[Krea2 bootstrap] Ready: {dest}", flush=True)
+    print(f"[Krea2] ready: {dest}", flush=True)
 
-for args in MODELS:
-    fetch(*args)
-
-print("[Krea2 bootstrap] All models ready.", flush=True)
+for item in MODELS:
+    fetch(*item)
+print("[Krea2] all models ready", flush=True)

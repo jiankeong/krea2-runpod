@@ -51,7 +51,7 @@
         "7",
         0
       ],
-      "prompt": "Edit this image. Keep the face consistent and preserve the original composition.",
+      "prompt": "Edit this image while preserving identity and composition.",
       "vae": [
         "4",
         0

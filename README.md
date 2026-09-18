@@ -1,45 +1,23 @@
-# Krea2 Turbo Edit v1.1 FP8 — RunPod Serverless v4
+# Krea2 Turbo Edit v1.1 FP8 — RunPod Serverless v5
 
-This version fixes the 30-minute RunPod GitHub Builder timeout by keeping large
-model weights OUT of the Docker image.
+## What changed from v4
 
-## Required: Network Volume
+- `.runpod/tests.json` is retained and uses `USE_MOCK_PIPELINE=1`.
+- Hub smoke tests do not download model weights.
+- Hub test timeout is 300000 ms.
+- `hub.json` follows the richer RunPod Hub configuration shape from the supplied working reference.
+- Network Volume model directories match worker-comfyui's published paths:
+  - diffusion model -> `/runpod-volume/models/unet/`
+  - text encoder -> `/runpod-volume/models/clip/`
+  - VAE -> `/runpod-volume/models/vae/`
+- No `pip install -U huggingface_hub`, avoiding the prior Transformers dependency conflict.
+- Model weights are not baked into the Docker image.
 
-Create and attach a RunPod Network Volume to the Serverless endpoint. The
-official worker-comfyui image exposes `/runpod-volume` as an extra ComfyUI model
-location. On the first worker boot, this image downloads Krea2 + text encoder +
-VAE into that persistent volume. Later boots skip files that already exist.
+## Important
 
-Suggested volume size: 40 GB minimum; 50 GB gives more headroom.
+Attach a Network Volume (50 GB+ recommended) at deployment. Do not set
+`USE_MOCK_PIPELINE=1` on the production endpoint; that variable is only for
+RunPod Hub tests.
 
-## Endpoint
-
-- Active workers: 0
-- Max workers: 1 while testing
-- GPU: start with >=24 GB VRAM; move up if inference OOMs
-- Flash Boot: enabled
-- Attach the Network Volume under Advanced
-- Container disk: 20 GB is enough because model weights live on the volume
-
-## Hugging Face token
-
-If the ChrisColeTech model download returns 401/403, set `HF_TOKEN` as an
-endpoint environment variable. Do NOT bake the token into the Dockerfile.
-
-## First boot
-
-The first worker boot downloads the model weights and can take several minutes.
-Watch worker logs for `[Krea2 bootstrap]`. Once files are present on the Network
-Volume, later workers skip the downloads.
-
-## Request
-
-The workflow expects a Base64 source image named `input.png`.
-
-Edit prompt:
-`workflow["16"]["inputs"]["prompt"]`
-
-Seed:
-`workflow["3"]["inputs"]["noise_seed"]`
-
-Defaults: 1024x1024, 8 steps, CFG 1.0.
+The included `workflow_api.json` is the Krea2 workflow template. The Docker
+base remains the official `runpod/worker-comfyui:5.8.6-base`.

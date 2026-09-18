@@ -1,16 +1,13 @@
 FROM runpod/worker-comfyui:5.8.6-base
 
 USER root
+WORKDIR /workspace
 
-# Keep the base image's compatible Hugging Face stack.
-RUN pip install --no-cache-dir "huggingface_hub>=0.36,<1.0"
+# huggingface_hub is already included by the base image; avoid changing the
+# Transformers/Hugging Face dependency set during Hub builds.
+COPY handler.py /workspace/handler.py
+COPY rp_handler.py /workspace/rp_handler.py
+COPY scripts /workspace/scripts
 
-COPY scripts/bootstrap_models.py /opt/krea2/bootstrap_models.py
-COPY scripts/start-krea2.sh /opt/krea2/start-krea2.sh
-
-RUN chmod +x /opt/krea2/start-krea2.sh
-
-# worker-comfyui already knows /runpod-volume as an extra ComfyUI model path.
-# We wrap its original CMD so models are bootstrapped into the persistent
-# Network Volume before the official worker starts.
-ENTRYPOINT ["/opt/krea2/start-krea2.sh"]
+# Keep the official worker-comfyui runtime intact. Hub can discover handler.py,
+# while tests use USE_MOCK_PIPELINE=1 and therefore never fetch model weights.
