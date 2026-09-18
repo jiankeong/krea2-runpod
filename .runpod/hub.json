@@ -1,11 +1,11 @@
 {
   "title": "Krea2 Turbo Edit v1.1 FP8",
-  "description": "Krea2 Turbo Edit v1.1 FP8 image editing on ComfyUI / RunPod Serverless.",
+  "description": "Krea2 Turbo Edit v1.1 FP8 on RunPod Serverless with persistent Network Volume model cache.",
   "type": "serverless",
   "category": "image",
   "config": {
     "runsOn": "GPU",
-    "containerDiskInGb": 40,
+    "containerDiskInGb": 20,
     "gpuCount": 1
   }
 }
