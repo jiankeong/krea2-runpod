@@ -31,12 +31,17 @@ PY
 # Runtime bootstrap stores large weights on the attached Network Volume.
 COPY custom_nodes/krea2_bootstrap /comfyui/custom_nodes/krea2_bootstrap
 COPY custom_nodes/auto_face_preserve /comfyui/custom_nodes/auto_face_preserve
-# The base image can contain a cv2 namespace stub/conflicting OpenCV wheels.
-# Remove all variants first, then install one complete headless wheel and verify the API at build time.
+# v5.8.9: repair cv2 WITHOUT allowing pip to resolve/upgrade any dependency.
+# In particular, do not touch torch/CUDA/numpy from worker-comfyui.
 RUN set -eux; \
-    /opt/venv/bin/python -m pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python opencv-contrib-python-headless || true; \
-    rm -rf /opt/venv/lib/python*/site-packages/cv2 /opt/venv/lib/python*/site-packages/opencv*; \
-    /opt/venv/bin/python -m pip install --no-cache-dir --force-reinstall "opencv-python-headless>=4.10,<5"; \
-    /opt/venv/bin/python -c "import cv2; assert hasattr(cv2, 'CascadeClassifier'), cv2.__file__; assert hasattr(cv2, 'data') and hasattr(cv2.data, 'haarcascades'); print('OpenCV:', cv2.__version__, cv2.__file__)"
+    TORCH_BEFORE=$(/opt/venv/bin/python -c "import torch; print(torch.__version__)"); \
+    CUDA_BEFORE=$(/opt/venv/bin/python -c "import torch; print(torch.version.cuda)"); \
+    NUMPY_BEFORE=$(/opt/venv/bin/python -c "import numpy; print(numpy.__version__)"); \
+    echo "Before OpenCV: torch=${TORCH_BEFORE} cuda=${CUDA_BEFORE} numpy=${NUMPY_BEFORE}"; \
+    /opt/venv/bin/python -m pip install --no-cache-dir --no-deps --ignore-installed "opencv-python-headless==4.11.0.86"; \
+    /opt/venv/bin/python -c "import cv2; assert hasattr(cv2, 'CascadeClassifier'), cv2.__file__; assert hasattr(cv2, 'data') and hasattr(cv2.data, 'haarcascades'); print('OpenCV:', cv2.__version__, cv2.__file__)"; \
+    test "$TORCH_BEFORE" = "$(/opt/venv/bin/python -c 'import torch; print(torch.__version__)')"; \
+    test "$CUDA_BEFORE" = "$(/opt/venv/bin/python -c 'import torch; print(torch.version.cuda)')"; \
+    test "$NUMPY_BEFORE" = "$(/opt/venv/bin/python -c 'import numpy; print(numpy.__version__)')"
 
-RUN echo "Krea2 RunPod v5.8.8 auto-face-preserve build complete"
+RUN echo "Krea2 RunPod v5.8.9 auto-face-preserve build complete"
