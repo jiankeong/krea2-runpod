@@ -30,5 +30,7 @@ PY
 
 # Runtime bootstrap stores large weights on the attached Network Volume.
 COPY custom_nodes/krea2_bootstrap /comfyui/custom_nodes/krea2_bootstrap
+COPY custom_nodes/auto_face_preserve /comfyui/custom_nodes/auto_face_preserve
+RUN /opt/venv/bin/python -m pip install --no-cache-dir opencv-python-headless
 
-RUN echo "Krea2 RunPod v5.8.6 identity-edit build complete"
+RUN echo "Krea2 RunPod v5.8.7 auto-face-preserve build complete"

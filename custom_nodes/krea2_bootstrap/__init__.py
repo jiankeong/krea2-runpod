@@ -29,16 +29,16 @@ else:
         root = volume / "models"
         cache_dir = volume / ".hf-cache"
         lock_path = volume / ".krea2-model-download.lock"
-        ready_marker = root / ".krea2-models-ready-v586"
+        ready_marker = root / ".krea2-models-ready-v587"
 
         unet_dir = root / "unet"
         clip_dir = root / "clip"
         vae_dir = root / "vae"
         lora_dir = root / "loras" / "Krea2"
-        for p in (unet_dir, clip_dir, vae_dir, lora_dir, cache_dir):
+        for p in (unet_dir, clip_dir, vae_dir, cache_dir):
             p.mkdir(parents=True, exist_ok=True)
 
-        print("[Krea2 bootstrap] v5.8.6 identity-edit synchronous bootstrap", flush=True)
+        print("[Krea2 bootstrap] v5.8.7 auto-face-preserve synchronous bootstrap", flush=True)
         print("[Krea2 bootstrap] Using Network Volume: /runpod-volume", flush=True)
 
         token = os.getenv("HF_TOKEN") or None
@@ -60,12 +60,6 @@ else:
                 "Comfy-Org/Krea-2",
                 "vae/qwen_image_vae.safetensors",
                 vae_dir / "qwen_image_vae.safetensors",
-            ),
-            (
-                "IDENTITY_LORA",
-                "conradlocke/krea2-identity-edit",
-                "krea2_identity_edit_v1_2.safetensors",
-                lora_dir / "krea2_identity_edit_v1_2.safetensors",
             ),
         ]
 
@@ -131,7 +125,7 @@ else:
                 raise RuntimeError("One or more Krea2 model files failed final verification")
 
             ready_marker.write_text(
-                "Krea2 Turbo Edit + Identity Edit v1.2 models verified by v5.8.6\n",
+                "Krea2 Turbo Edit models verified by v5.8.7\n",
                 encoding="utf-8",
             )
             print("[Krea2 bootstrap] KREA2_MODELS_READY", flush=True)

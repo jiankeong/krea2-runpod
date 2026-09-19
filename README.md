@@ -1,13 +1,11 @@
-# Krea2 RunPod Serverless v5.8.6
+# Krea2 RunPod Serverless v5.8.7
 
-Adds Krea2 Identity Edit v1.2 support for stronger identity/face preservation during edits such as clothing changes.
+Adds automatic face preservation for single-image Krea2 edits.
 
-Production runtime automatically verifies/downloads these files to the attached Network Volume:
-- Krea2 Turbo uncensored FP8 UNET
-- Qwen3-VL 4B FP8 Krea2 text encoder
-- Qwen Image VAE
-- `models/loras/Krea2/krea2_identity_edit_v1_2.safetensors`
+- Input can remain a single `input.png`; no user-supplied mask is required.
+- `AutoFacePreserveComposite` detects the largest frontal face from the original image, expands the protected region toward hair/head, feathers the boundary, and composites original pixels over the Krea2 edited result.
+- Krea2 base edit remains 8 steps / CFG 1.
+- Existing Network Volume model paths are unchanged.
+- `.runpod/tests.json` is retained for RunPod Hub smoke testing.
 
-The Docker image installs `lbouaraba/comfyui-krea2edit` custom nodes. `.runpod/tests.json` is intentionally retained for RunPod Hub smoke testing and uses `USE_MOCK_PIPELINE=1`, so Hub tests do not download model weights.
-
-Attach the existing Network Volume at `/runpod-volume` for production.
+For a workflow, connect the original `LoadImage` and final `VAEDecode` to `AutoFacePreserveComposite`, then connect its `image` output to `SaveImage`.
