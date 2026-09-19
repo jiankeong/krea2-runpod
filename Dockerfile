@@ -31,6 +31,12 @@ PY
 # Runtime bootstrap stores large weights on the attached Network Volume.
 COPY custom_nodes/krea2_bootstrap /comfyui/custom_nodes/krea2_bootstrap
 COPY custom_nodes/auto_face_preserve /comfyui/custom_nodes/auto_face_preserve
-RUN /opt/venv/bin/python -m pip install --no-cache-dir opencv-python-headless
+# The base image can contain a cv2 namespace stub/conflicting OpenCV wheels.
+# Remove all variants first, then install one complete headless wheel and verify the API at build time.
+RUN set -eux; \
+    /opt/venv/bin/python -m pip uninstall -y opencv-python opencv-python-headless opencv-contrib-python opencv-contrib-python-headless || true; \
+    rm -rf /opt/venv/lib/python*/site-packages/cv2 /opt/venv/lib/python*/site-packages/opencv*; \
+    /opt/venv/bin/python -m pip install --no-cache-dir --force-reinstall "opencv-python-headless>=4.10,<5"; \
+    /opt/venv/bin/python -c "import cv2; assert hasattr(cv2, 'CascadeClassifier'), cv2.__file__; assert hasattr(cv2, 'data') and hasattr(cv2.data, 'haarcascades'); print('OpenCV:', cv2.__version__, cv2.__file__)"
 
-RUN echo "Krea2 RunPod v5.8.7 auto-face-preserve build complete"
+RUN echo "Krea2 RunPod v5.8.8 auto-face-preserve build complete"
