@@ -90,3 +90,12 @@ Production requires a Network Volume mounted at `/runpod-volume`.
 - Hub smoke-test isolation hardened: when `USE_MOCK_PIPELINE=1`, the custom node returns through the minimal path before importing `fcntl`, `huggingface_hub`, filesystem helpers, or starting any thread.
 - Production behavior keeps the v5.8 Network Volume lock and persistent Hugging Face cache.
 - `.runpod/tests.json` remains required and unchanged from the known-good v5.7 smoke workflow.
+
+## v5.8.2
+
+- Production bootstrap is synchronous during ComfyUI custom-node import. ComfyUI will not become API-ready until all three Krea2 files exist in the exact Network Volume model directories.
+- `.runpod/tests.json` is retained. `USE_MOCK_PIPELINE=1` still bypasses all downloads during Hub smoke tests.
+- An old ready marker is never trusted; every startup checks the actual final file path and size.
+- Adds explicit `UNET/CLIP/VAE EXISTS=... SIZE=... VALID=... PATH=...` diagnostics.
+- Downloads are serialized with the Network Volume file lock and copied atomically through `.part` files.
+- Successful production startup prints `KREA2_MODELS_READY` followed by `MODEL_DOWNLOAD_COMPLETE`.
