@@ -29,7 +29,7 @@ else:
         root = volume / "models"
         cache_dir = volume / ".hf-cache"
         lock_path = volume / ".krea2-model-download.lock"
-        ready_marker = root / ".krea2-models-ready-v582"
+        ready_marker = root / ".krea2-models-ready-v584"
 
         unet_dir = root / "unet"
         clip_dir = root / "clip"
@@ -37,7 +37,7 @@ else:
         for p in (unet_dir, clip_dir, vae_dir, cache_dir):
             p.mkdir(parents=True, exist_ok=True)
 
-        print("[Krea2 bootstrap] v5.8.2 synchronous bootstrap", flush=True)
+        print("[Krea2 bootstrap] v5.8.4 synchronous bootstrap", flush=True)
         print("[Krea2 bootstrap] Using Network Volume: /runpod-volume", flush=True)
 
         token = os.getenv("HF_TOKEN") or None
@@ -124,7 +124,7 @@ else:
                 raise RuntimeError("One or more Krea2 model files failed final verification")
 
             ready_marker.write_text(
-                "Krea2 Turbo Edit v1.1 FP8 models verified by v5.8.2\n",
+                "Krea2 Turbo Edit v1.1 FP8 models verified by v5.8.4\n",
                 encoding="utf-8",
             )
             print("[Krea2 bootstrap] KREA2_MODELS_READY", flush=True)

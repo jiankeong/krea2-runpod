@@ -1,30 +1,23 @@
-# Krea2 RunPod Serverless v5.8.3
+# Krea2 RunPod Serverless v5.8.5
 
-Fixes the remaining Krea2 CLIP loader problem seen on RunPod worker-comfyui 5.8.6-base.
+Fixes the remaining `CLIPLoader type: krea2 not in list` failure.
 
-## Changes
+## What changed
+- Base remains `runpod/worker-comfyui:5.8.6-base` so the RunPod handler and lifecycle stay intact.
+- During Docker build, current upstream ComfyUI source is overlaid onto `/comfyui`.
+- Build fails unless both conditions are true:
+  - `/comfyui/comfy/text_encoders/krea2.py` exists.
+  - `/comfyui/nodes.py` contains the `krea2` CLIPLoader option.
+- Existing synchronous Network Volume model bootstrap is retained.
+- `.runpod/tests.json` is retained; Hub smoke tests still use `USE_MOCK_PIPELINE=1`.
 
-- Keeps `runpod/worker-comfyui:5.8.6-base` and its official RunPod handler/ENTRYPOINT.
-- Upgrades ComfyUI core to **v0.26.0**, which includes Krea2 support (`CLIPLoader` type `krea2`).
-- Keeps the v5.8.2 synchronous Network Volume bootstrap.
-- Reuses existing models under `/runpod-volume/models/{unet,clip,vae}`; they are not re-downloaded when valid.
-- Keeps `.runpod/tests.json` and `USE_MOCK_PIPELINE=1` Hub-test bypass.
-
-## Expected production startup
-
-Existing Network Volume should show `Exists:` for UNET/CLIP/VAE followed by:
-
+## Expected build log
 ```
-[Krea2 bootstrap] KREA2_MODELS_READY
-[Krea2 bootstrap] MODEL_DOWNLOAD_COMPLETE
+KREA2 CLIP TYPE: OK
+KREA2 TEXT ENCODER: OK
 ```
 
-Then ComfyUI should accept `CLIPLoader` with:
+## Expected production model log
+Because the models already exist on the Network Volume, production should report `EXISTS=True` / `Exists:` for UNET, CLIP and VAE, followed by `KREA2_MODELS_READY`.
 
-```json
-{
-  "clip_name": "qwen3vl_4b_fp8_scaled.safetensors",
-  "type": "krea2",
-  "device": "default"
-}
-```
+After deployment, retry the same `/runsync` workflow with `CLIPLoader` type set to `krea2`.
