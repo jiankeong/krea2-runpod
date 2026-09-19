@@ -1,23 +1,13 @@
-# Krea2 RunPod Serverless v5.8.5
+# Krea2 RunPod Serverless v5.8.6
 
-Fixes the remaining `CLIPLoader type: krea2 not in list` failure.
+Adds Krea2 Identity Edit v1.2 support for stronger identity/face preservation during edits such as clothing changes.
 
-## What changed
-- Base remains `runpod/worker-comfyui:5.8.6-base` so the RunPod handler and lifecycle stay intact.
-- During Docker build, current upstream ComfyUI source is overlaid onto `/comfyui`.
-- Build fails unless both conditions are true:
-  - `/comfyui/comfy/text_encoders/krea2.py` exists.
-  - `/comfyui/nodes.py` contains the `krea2` CLIPLoader option.
-- Existing synchronous Network Volume model bootstrap is retained.
-- `.runpod/tests.json` is retained; Hub smoke tests still use `USE_MOCK_PIPELINE=1`.
+Production runtime automatically verifies/downloads these files to the attached Network Volume:
+- Krea2 Turbo uncensored FP8 UNET
+- Qwen3-VL 4B FP8 Krea2 text encoder
+- Qwen Image VAE
+- `models/loras/Krea2/krea2_identity_edit_v1_2.safetensors`
 
-## Expected build log
-```
-KREA2 CLIP TYPE: OK
-KREA2 TEXT ENCODER: OK
-```
+The Docker image installs `lbouaraba/comfyui-krea2edit` custom nodes. `.runpod/tests.json` is intentionally retained for RunPod Hub smoke testing and uses `USE_MOCK_PIPELINE=1`, so Hub tests do not download model weights.
 
-## Expected production model log
-Because the models already exist on the Network Volume, production should report `EXISTS=True` / `Exists:` for UNET, CLIP and VAE, followed by `KREA2_MODELS_READY`.
-
-After deployment, retry the same `/runsync` workflow with `CLIPLoader` type set to `krea2`.
+Attach the existing Network Volume at `/runpod-volume` for production.
